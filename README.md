@@ -4,12 +4,22 @@ Octypst is a reusable [Typst](https://typst.app/) template for professional
 technical project reports. It includes an Octoco-styled report layout, a
 complete fictional sample report, and the graphics used by that sample.
 
-Typst documents are especially well suited to simultaneous human and agent
-editing. Report content and layout are plain-text source files, so people can
+Typst documents are well suited to human and agent collaboration. Report
+content and layout are plain-text source files, so people can
 review focused Git diffs while coding agents can draft sections, update tables,
 or make consistent template changes. Both work against the same source of
 truth; the PDF is a reproducible build artifact rather than a file that must be
 manually merged.
+
+## Report preview
+
+![Sample report cover](assets/sample-report/report-cover.png)
+
+*Cover page from the included sample report.*
+
+![Sample report content](assets/sample-report/report-content.png)
+
+*A representative content page with report headings and an architecture figure.*
 
 ## Quick start
 
@@ -42,6 +52,38 @@ You can also invoke Typst directly:
 typst compile sample_report.typ sample_report.pdf
 ```
 
+### Add the template to an existing Git project
+
+You do not need to clone this repository or add it as a Git remote. From your
+existing project's root, download a source archive and copy the template and
+the assets it needs. Review the files first if your project already has paths
+with the same names.
+
+```sh
+tmp_dir="$(mktemp -d)"
+mkdir "$tmp_dir/octypst"
+curl --fail --location \
+  https://github.com/gvrooyen/octypst/archive/refs/heads/main.tar.gz \
+  --output "$tmp_dir/octypst.tar.gz"
+tar --extract --gzip --file "$tmp_dir/octypst.tar.gz" \
+  --strip-components=1 --directory "$tmp_dir/octypst"
+
+cp "$tmp_dir/octypst/octoco-report-template.typ" .
+mkdir -p assets
+cp -R "$tmp_dir/octypst/assets/octoco-report" assets/
+cp "$tmp_dir/octypst/LICENSE" OCTYPST-LICENSE
+
+# Optional: include the sample report and its illustrations.
+# cp "$tmp_dir/octypst/sample_report.typ" .
+# cp -R "$tmp_dir/octypst/assets/sample-report" assets/
+rm -rf "$tmp_dir"
+```
+
+The template expects the logo and cover artwork at `assets/octoco-report/`.
+The copied `OCTYPST-LICENSE` preserves the required MIT notice. Include the
+optional files if you want the full example; otherwise, create a report source
+file that imports the template.
+
 ## Customize a report
 
 1. Copy `sample_report.typ` to a new `.typ` file.
@@ -52,6 +94,34 @@ typst compile sample_report.typ sample_report.pdf
 The sample is deliberately fictional and contains redacted placeholders. It is
 a template and example, not a production report or a source of real project
 information.
+
+### Typst markup at a glance
+
+The report is ordinary, readable text with light markup for structure and
+template helpers:
+
+```typst
+#import "octoco-report-template.typ": *
+
+#show: octoco-report.with(document-title: "Project report")
+
+#cover-page(
+  title: "Technical Project Report",
+  subtitle: "A concise project summary",
+)
+
+= Purpose and scope
+
+This paragraph is the report body. Use _emphasis_ and *strong text* directly
+in the source.
+
+== Objectives
+
+- Describe an outcome.
+- Link to a figure with @architecture.
+
+#figure([An architecture diagram goes here.]) <architecture>
+```
 
 ### Repository layout
 
@@ -91,7 +161,20 @@ OCTOCO_HEADING_FONT="Your Installed Heading Font" make
 
 The Makefile passes the values to Typst as document inputs. This leaves the
 template’s portable defaults intact and avoids editing the template for each
-local environment.
+local environment. Install the default font families (or your selected
+overrides) locally to reproduce the intended typography.
+
+These environment variables work through this repository's Makefile. If you
+copied only the template and assets into another project, pass the corresponding
+inputs to Typst directly:
+
+```sh
+typst compile \
+  --input body-font="Open Sans" \
+  --input heading-font="Lato" \
+  --input mono-font="Liberation Mono" \
+  report.typ report.pdf
+```
 
 ## Human and agent collaboration
 
@@ -104,10 +187,6 @@ Typst and Git provide a practical workflow for mixed human/agent authorship:
    to facts, client information, figures, and approval language.
 4. Run `make` to render the PDF and inspect the affected pages before sharing.
 5. Commit the reviewed source and assets; do not commit generated PDFs.
-
-Plain-text Typst source avoids the brittle, opaque merges common with binary
-word-processing files. Agents can make small, reviewable changes while human
-authors retain editorial and factual control.
 
 ## Building in Amp orbs
 

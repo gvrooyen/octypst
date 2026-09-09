@@ -10,7 +10,8 @@
 
 #cover-page(
   title: "Technical Project Report",
-  subtitle: "A generic, non-confidential example",
+  subtitle: "A generic example",
+  classification: "CONFIDENTIAL",
 )
 
 #title-page(

@@ -165,6 +165,7 @@
 #let cover-page(
   title: "",
   subtitle: "",
+  classification: none,
   background: "assets/octoco-report/cover-background.png",
 ) = {
   set page(paper: "a4", margin: 0pt, footer: none)
@@ -173,7 +174,14 @@
     #align(right)[
       #text(font: heading-font, size: 25pt, weight: "bold", fill: white)[#title]
       #linebreak()
+      #v(8pt)
       #text(font: heading-font, size: 17pt, fill: white)[#subtitle]
+      #if classification != none [
+        #v(18pt)
+        #align(right)[
+          #text(font: heading-font, size: 12pt, fill: white)[#classification]
+        ]
+      ]
     ]
   ]
   pagebreak()
