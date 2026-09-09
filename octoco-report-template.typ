@@ -89,7 +89,7 @@
   set footnote.entry(indent: 0em)
   show footnote.entry: it => {
     let location = it.note.location()
-    let number = counter(footnote).display(at: location, it.note.numbering)
+    let number = numbering(it.note.numbering, ..counter(footnote).at(location))
     let back-link = link.with(location)
     par(back-link(super(number)) + h(0.5em) + it.note.body)
   }

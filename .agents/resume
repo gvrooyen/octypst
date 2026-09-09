@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# This repository has no backing services or credentials to restore. Keep the
+# lifecycle hook so future additions have a fast, explicit place for that work.
+command -v typst >/dev/null
