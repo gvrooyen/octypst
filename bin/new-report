@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: new-report <destination>
+
+Create a self-contained Octypst report folder at <destination>.
+The destination must not already exist.
+EOF
+}
+
+if (($# != 1)); then
+  usage >&2
+  exit 2
+fi
+
+destination="$1"
+if [[ -z "$destination" ]]; then
+  usage >&2
+  exit 2
+fi
+
+if [[ "$destination" != /* ]]; then
+  destination="$PWD/$destination"
+fi
+
+source_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+required_sources=(
+  "$source_root/starter_report.typ"
+  "$source_root/octoco-report-template.typ"
+  "$source_root/assets/octoco-report"
+  "$source_root/LICENSE"
+)
+
+for source in "${required_sources[@]}"; do
+  if [[ ! -e "$source" ]]; then
+    printf 'new-report: required source is missing: %s\n' "$source" >&2
+    exit 1
+  fi
+done
+
+if [[ -e "$destination" ]]; then
+  printf 'new-report: destination already exists: %s\n' "$destination" >&2
+  exit 1
+fi
+
+mkdir -p "$(dirname "$destination")"
+mkdir "$destination"
+
+cleanup_on_failure() {
+  rm -rf "$destination"
+}
+trap cleanup_on_failure ERR
+
+cp "$source_root/starter_report.typ" "$destination/report.typ"
+cp "$source_root/octoco-report-template.typ" "$destination/"
+mkdir "$destination/assets"
+cp -R "$source_root/assets/octoco-report" "$destination/assets/"
+cp "$source_root/LICENSE" "$destination/OCTYPST-LICENSE"
+printf '*.pdf\n' > "$destination/.gitignore"
+
+trap - ERR
+printf 'Created report at %s\n' "$destination"

@@ -54,35 +54,29 @@ typst compile sample_report.typ sample_report.pdf
 
 ### Add the template to an existing Git project
 
-You do not need to clone this repository or add it as a Git remote. From your
-existing project's root, download a source archive and copy the template and
-the assets it needs. Review the files first if your project already has paths
-with the same names.
+Keep an Octypst checkout on your machine and expose its `bin` directory once:
 
 ```sh
-tmp_dir="$(mktemp -d)"
-mkdir "$tmp_dir/octypst"
-curl --fail --location \
-  https://github.com/gvrooyen/octypst/archive/refs/heads/main.tar.gz \
-  --output "$tmp_dir/octypst.tar.gz"
-tar --extract --gzip --file "$tmp_dir/octypst.tar.gz" \
-  --strip-components=1 --directory "$tmp_dir/octypst"
-
-cp "$tmp_dir/octypst/octoco-report-template.typ" .
-mkdir -p assets
-cp -R "$tmp_dir/octypst/assets/octoco-report" assets/
-cp "$tmp_dir/octypst/LICENSE" OCTYPST-LICENSE
-
-# Optional: include the sample report and its illustrations.
-# cp "$tmp_dir/octypst/sample_report.typ" .
-# cp -R "$tmp_dir/octypst/assets/sample-report" assets/
-rm -rf "$tmp_dir"
+git clone https://github.com/gvrooyen/octypst.git "$HOME/octypst"
+export PATH="$HOME/octypst/bin:$PATH"
 ```
 
-The template expects the logo and cover artwork at `assets/octoco-report/`.
-The copied `OCTYPST-LICENSE` preserves the required MIT notice. Include the
-optional files if you want the full example; otherwise, create a report source
-file that imports the template.
+Add the `export` line to your shell startup file to make `new-report` available
+in future terminals. If you keep the checkout somewhere else, replace
+`$HOME/octypst` with that path.
+
+From the root of any existing project, create a report folder with one command:
+
+```sh
+new-report reports/design
+typst watch reports/design/report.typ reports/design/report.pdf
+```
+
+Use `typst compile` instead of `typst watch` for a single build. The generated
+folder is self-contained and includes a minimal `report.typ`, the template,
+required logo and cover assets, `OCTYPST-LICENSE`, and a `.gitignore` for PDFs.
+Commit that folder to the destination project. The command refuses to overwrite
+an existing destination.
 
 ## Customize a report
 
@@ -128,7 +122,9 @@ in the source.
 | Path | Purpose |
 | --- | --- |
 | `octoco-report-template.typ` | Reusable layout, typography, cover, headings, notices, figures, and report helpers. |
-| `sample_report.typ` | Complete example document and starting point for new reports. |
+| `starter_report.typ` | Minimal report copied by `new-report`. |
+| `sample_report.typ` | Complete fictional example document. |
+| `bin/new-report` | Creates a self-contained report folder in another project. |
 | `assets/octoco-report/` | Octoco logo and cover-background artwork. |
 | `assets/sample-report/` | Architecture and data-flow graphics used by the sample. |
 | `Makefile` | Reproducible local build with optional font overrides. |
