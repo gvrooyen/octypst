@@ -22,6 +22,38 @@
   }
 ] + h(0.5em)
 
+#let O = checkbox()
+#let X = checkbox(checked: true)
+
+#let notice(
+  body,
+  title: none,
+  fill: luma(245),
+  stroke: 0.6pt + octoco-purple,
+  radius: 4pt,
+  inset: 12pt,
+  above: 18pt,
+) = [
+  #v(above)
+  #block(
+    inset: inset,
+    fill: fill,
+    stroke: stroke,
+    radius: radius,
+  )[
+    #if title != none {
+      strong(title) + h(0.25em)
+    }
+    #body
+  ]
+]
+
+#let callout(body) = block(
+  inset: 10pt,
+  stroke: (left: 3pt + octoco-purple),
+  fill: rgb("#f8f3f8"),
+)[#body]
+
 #let footer-rule(logo: "assets/octoco-report/octoco-logo.png", confidential: false) = context {
   if counter(page).get().first() > 1 {
     box(width: 100%)[
@@ -54,6 +86,13 @@
   set par(spacing: 1em, justify: true)
   set enum(spacing: 1em, indent: 0.25in, body-indent: 0.15in)
   set list(spacing: 1em, indent: 0.25in, body-indent: 0.15in)
+  set footnote.entry(indent: 0em)
+  show footnote.entry: it => {
+    let location = it.note.location()
+    let number = counter(footnote).display(at: location, it.note.numbering)
+    let back-link = link.with(location)
+    par(back-link(super(number)) + h(0.5em) + it.note.body)
+  }
   show enum: it => v(0.5em) + it + v(0.25em)
   show list: it => v(0.5em) + it + v(0.25em)
   set heading(numbering: (..nums) => {
@@ -76,6 +115,9 @@
   ]
   // show raw: set text(font: mono-font, size: 1.2em)
   show raw: it => h(0.25em) + text(font: mono-font, size: 1.25em)[#it] + h(0.25em)
+  show math.equation: set text(size: 1.1em)
+  show quote: set text(style: "italic")
+  show quote: it => block(inset: (x: 1em))[#it]
   show figure.caption: it => align(center)[
     #text(font: body-font, size: 9pt, fill: octoco-caption, style: "italic")[
       #context [#it.supplement #it.counter.display(it.numbering): #it.body]

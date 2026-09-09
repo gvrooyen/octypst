@@ -1,5 +1,7 @@
 #import "octoco-report-template.typ": *
 
+#set page(numbering: "1")
+
 #show: octoco-report.with(
   document-title: "Generic Technical Project Report",
   document-author: "Octoco",
@@ -18,14 +20,9 @@
   author: "Octoco Engineering Team",
 )
 
-#v(18pt)
-#block(
-  inset: 12pt,
-  fill: luma(245),
-  stroke: 0.6pt + octoco-purple,
-  radius: 4pt,
-)[
-  *Redaction notice.* This demonstrator contains fictional systems, synthetic metrics, and generic
+// Reusable notices accept an optional title followed by their body content.
+#notice(title: [Redaction notice.])[
+  This demonstrator contains fictional systems, synthetic metrics, and generic
   recommendations. All client names, people, credentials, commercial terms, and identifying project
   details are shown as *[REDACTED]* or have been replaced with illustrative content.
 ]
@@ -33,6 +30,7 @@
 #report-outline(depth: 3)
 #pagebreak()
 
+// Use the template helper for an unnumbered top-level heading.
 #h1("Executive Summary", numbered: false) <executive-summary>
 
 This report records the design and delivery status of a fictional workflow platform, _Acme Flow_. It
@@ -40,6 +38,10 @@ demonstrates the Octoco report template while remaining suitable for public exam
 release is assessed as *conditionally ready*: core processing meets its target, while recovery testing
 and operational handover remain open.
 
+The intended outcomes and delivery boundaries are detailed in @scope (see
+#ref(<scope>, form: "page")).
+
+// Wrap tables in figures to add captions, labels, and cross-references.
 #figure(
   table(
     columns: (2.2fr, 1fr, 1.3fr),
@@ -57,6 +59,7 @@ and operational handover remain open.
 As shown in @tbl-scorecard, performance goals were met. Two quarantined tests concern a simulated
 third-party outage and must pass before production approval.
 
+// Native Typst heading syntax supplies numbering; the attached label enables section and page references.
 = Purpose and Scope <scope>
 
 This section defines the intended outcomes, delivery boundaries, and assumptions that frame the
@@ -85,14 +88,17 @@ validated with the relevant technical and operational stakeholders before a real
 + Payloads contain synthetic data only during this demonstration.
   + Files are generated from fixtures.
   + Secrets are injected at runtime and never embedded in source.
-+ Recovery objectives are illustrative: $"RTO" = 60 " min"$ and $"RPO" = 15 " min"$.
++ Recovery objectives are illustrative: RTO = 60 min and RPO = 15 min.
 
 These constraints keep the example focused on the delivery approach while making its dependencies and
 trade-offs explicit. Any production implementation would require documented ownership and review.
 
+// Block quotes support an attribution and inherit the template's quote styling.
 #quote(block: true, attribution: [Project principle])[
   Prefer a small, observable change that can be reversed over a large change that can only be hoped
-  to work.
+  to work. Make the intended outcome measurable, record the assumptions that support it, and retain a
+  clear path to recovery when conditions change. Sustainable delivery is built from evidence and
+  feedback, not from irreversible leaps of faith.
 ]
 
 = Solution Design <solution-design>
@@ -104,6 +110,7 @@ This section summarises the solution structure, component boundaries, and princi
 The reference architecture separates user-facing, workflow, integration, and data concerns so each
 can be governed and operated independently.
 
+// The template helper places an image with a caption and a reusable figure label.
 #report-figure(
   "assets/sample-report/acme-flow-architecture.svg",
   [Fictional reference architecture and integration boundaries.],
@@ -264,13 +271,14 @@ handover.
 
 The checklist summarises completed controls and the remaining actions before approval.
 
+// Hide the list marker and use the compact #X and #O checkbox helpers.
 #list(
   marker: none,
-  [#checkbox(checked: true) Build is reproducible from a clean checkout.],
-  [#checkbox(checked: true) Dashboards use synthetic examples and correlation identifiers.],
-  [#checkbox(checked: true) Backup creation is automated.],
-  [#checkbox() Timed restore meets the stated recovery objective.],
-  [#checkbox() On-call ownership is approved by *[REDACTED ROLE]*.],
+  [#X Build is reproducible from a clean checkout.],
+  [#X Dashboards use synthetic examples and correlation identifiers.],
+  [#X Backup creation is automated.],
+  [#O Timed restore meets the stated recovery objective.],
+  [#O On-call ownership is approved by *[REDACTED ROLE]*.],
 )
 
 Alerts should describe user impact, threshold, and immediate action. For example, “queue age exceeds
@@ -281,11 +289,7 @@ to diagnosis, mitigation, escalation, and recovery verification.
 
 The following callout illustrates how a critical operational constraint can be made prominent.
 
-#block(
-  inset: 10pt,
-  stroke: (left: 3pt + octoco-purple),
-  fill: rgb("#f8f3f8"),
-)[
+#callout[
   *Operational rule:* never replay a dead-letter event until its idempotency behaviour and downstream
   side effects have been checked.
 ]
@@ -316,6 +320,7 @@ are evidenced.
 
 The following public sources provide general context for the illustrative guidance in this report.
 
+// The template's reference helper supplies citation targets used by #cite above.
 #block[
 #set enum(numbering: "[1] ", start: 1)
 + #reference(<ref-nist-ssdf>)[
