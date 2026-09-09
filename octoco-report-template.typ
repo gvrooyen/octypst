@@ -1,8 +1,11 @@
 #let octoco-purple = rgb("#6D1D6A")
 #let octoco-caption = rgb("#632E62")
-#let body-font = ("Lato", "Open Sans", "Liberation Sans")
-#let heading-font = "Liberation Sans"
-#let mono-font = "Liberation Mono"
+#let body-font = sys.inputs.at(
+  "body-font",
+  default: ("Lato", "Open Sans", "Liberation Sans"),
+)
+#let heading-font = sys.inputs.at("heading-font", default: "Liberation Sans")
+#let mono-font = sys.inputs.at("mono-font", default: "Liberation Mono")
 
 #let fig-caption(body, at: center) = align(at)[
   #text(font: body-font, size: 9pt, fill: octoco-caption, style: "italic")[#body]
