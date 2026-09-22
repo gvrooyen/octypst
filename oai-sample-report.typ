@@ -1,7 +1,7 @@
 #import "report-template.typ": report-template
-#import "octoco-report-brand.typ": octoco-brand
+#import "oai-report-brand.typ": oai-brand
 
-#let template = report-template(octoco-brand)
+#let template = report-template(oai-brand)
 #let (
   report,
   cover-page,
@@ -20,21 +20,21 @@
 #set page(numbering: "1")
 
 #show: report.with(
-  document-title: "Generic Technical Project Report",
-  document-author: "Octoco",
+  document-title: "Generic AI Project Report",
+  document-author: "Octoco AI",
   confidential: false,
 )
 
 #cover-page(
-  title: "Technical Project Report",
+  title: "AI Project Report",
   subtitle: "A generic, non-confidential example",
 )
 
 #title-page(
-  title-lines: ("Technical Project", "Implementation Report"),
-  prepared: "Prepared by Octoco for [REDACTED CLIENT]",
+  title-lines: ("AI Project", "Implementation Report"),
+  prepared: "Prepared by Octoco AI for [REDACTED CLIENT]",
   version: "1.0 — 27 August 2026",
-  author: "Octoco Engineering Team",
+  author: "Octoco AI Team",
 )
 
 // Reusable notices accept an optional title followed by their body content.
@@ -51,7 +51,7 @@
 #h1("Executive Summary", numbered: false) <executive-summary>
 
 This report records the design and delivery status of a fictional workflow platform, _Acme Flow_. It
-demonstrates the Octoco report template while remaining suitable for public examples. The illustrative
+demonstrates the Octoco AI report brand while remaining suitable for public examples. The illustrative
 release is assessed as *conditionally ready*: core processing meets its target, while recovery testing
 and operational handover remain open.
 
@@ -327,7 +327,7 @@ network access only when opened; the report build itself is local.]
 
 = Conclusion <conclusion>
 
-This generic report demonstrates how Octoco can communicate architecture, delivery evidence,
+This generic report demonstrates how Octoco AI can communicate architecture, delivery evidence,
 technical notation, code, tables, figures, risks, and recommendations without exposing confidential
 information. The fictional project is ready for approval only after the two open readiness actions
 are evidenced.

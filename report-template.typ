@@ -1,14 +1,17 @@
-#let octoco-purple = rgb("#6D1D6A")
-#let octoco-caption = rgb("#632E62")
 #let body-font = ("Lato", "Open Sans", "Liberation Sans")
 #let heading-font = "Liberation Sans"
 #let mono-font = "Liberation Mono"
 
-#let fig-caption(body, at: center) = align(at)[
-  #text(font: body-font, size: 9pt, fill: octoco-caption, style: "italic")[#body]
+#let report-template(brand) = {
+let primary-color = brand.colors.heading
+let secondary-color = brand.colors.subheading
+let caption-color = brand.colors.caption
+
+let fig-caption(body, at: center) = align(at)[
+  #text(font: body-font, size: 9pt, fill: caption-color, style: "italic")[#body]
 ]
 
-#let checkbox(checked: false) = box(
+let checkbox(checked: false) = box(
   width: 0.9em,
   height: 0.9em,
   inset: 0pt,
@@ -17,19 +20,19 @@
 )[
   #if checked {
     align(center + horizon)[
-      #text(size: 0.8em, fill: octoco-purple)[#sym.checkmark]
+      #text(size: 0.8em, fill: primary-color)[#sym.checkmark]
     ]
   }
 ] + h(0.5em)
 
-#let O = checkbox()
-#let X = checkbox(checked: true)
+let O = checkbox()
+let X = checkbox(checked: true)
 
-#let notice(
+let notice(
   body,
   title: none,
   fill: luma(245),
-  stroke: 0.6pt + octoco-purple,
+  stroke: 0.6pt + primary-color,
   radius: 4pt,
   inset: 12pt,
   above: 18pt,
@@ -48,16 +51,16 @@
   ]
 ]
 
-#let callout(body) = block(
+let callout(body) = block(
   inset: 10pt,
-  stroke: (left: 3pt + octoco-purple),
+  stroke: (left: 3pt + primary-color),
   fill: rgb("#f8f3f8"),
 )[#body]
 
-#let footer-rule(logo: "assets/octoco-report/octoco-logo.png", confidential: false) = context {
+let footer-rule(logo: brand.logo, confidential: false) = context {
   if counter(page).get().first() > 1 {
     box(width: 100%)[
-      #line(length: 100%, stroke: 0.55pt + octoco-purple)
+      #line(length: 100%, stroke: 0.55pt + primary-color)
       #v(4pt)
       #grid(
         columns: (1fr, 1fr, 1fr),
@@ -70,7 +73,7 @@
   }
 }
 
-#let octoco-report(body, document-title: none, document-author: "Octoco", confidential: false) = {
+let report(body, document-title: none, document-author: none, confidential: false) = {
   if document-title == none {
     set document(author: document-author)
   } else {
@@ -102,13 +105,13 @@
   })
 
   show heading.where(level: 1): it => block(above: 1.4em, below: 0.8em)[
-    #text(font: heading-font, size: 16pt, fill: octoco-purple)[#it]
+    #text(font: heading-font, size: 16pt, fill: primary-color)[#it]
   ]
   show heading.where(level: 2): it => block(above: 1.2em, below: 0.65em)[
-    #text(font: heading-font, size: 13pt, fill: octoco-purple)[#it]
+    #text(font: heading-font, size: 13pt, fill: primary-color)[#it]
   ]
   show heading.where(level: 3): it => block(above: 1.35em, below: 1.05em)[
-    #text(font: heading-font, size: 12pt, fill: rgb("#481346"))[#it]
+    #text(font: heading-font, size: 12pt, fill: secondary-color)[#it]
   ]
   show heading.where(level: 5): it => block(above: 0.9em, below: 0.75em)[
     #text(font: heading-font, size: 11pt, weight: "semibold", fill: black)[#it.body]
@@ -119,7 +122,7 @@
   show quote: set text(style: "italic")
   show quote: it => block(inset: (x: 1em))[#it]
   show figure.caption: it => align(center)[
-    #text(font: body-font, size: 9pt, fill: octoco-caption, style: "italic")[
+    #text(font: body-font, size: 9pt, fill: caption-color, style: "italic")[
       #context [#it.supplement #it.counter.display(it.numbering): #it.body]
     ]
   ]
@@ -127,7 +130,7 @@
   show figure.where(kind: table): set figure.caption(position: top)
   show figure: it => block(above: 2em, below: 2em)[#it]
   show figure.caption.where(position: top): it => align(center)[
-    #text(font: body-font, size: 11pt, fill: octoco-caption, style: "italic")[
+    #text(font: body-font, size: 11pt, fill: caption-color, style: "italic")[
       #context [#it.supplement #it.counter.display(it.numbering): #it.body]
     ]
   ]
@@ -135,7 +138,7 @@
   body
 }
 
-#let h1(title, numbered: true, outlined: true) = {
+let h1(title, numbered: true, outlined: true) = {
   if numbered {
     heading(level: 1, outlined: outlined)[#title]
   } else {
@@ -143,7 +146,7 @@
   }
 }
 
-#let h2(title, numbered: true, outlined: true) = {
+let h2(title, numbered: true, outlined: true) = {
   if numbered {
     heading(level: 2, outlined: outlined)[#title]
   } else {
@@ -151,7 +154,7 @@
   }
 }
 
-#let h3(title, numbered: true, outlined: true) = {
+let h3(title, numbered: true, outlined: true) = {
   if numbered {
     heading(level: 3, outlined: outlined)[#title]
   } else {
@@ -159,10 +162,10 @@
   }
 }
 
-#let cover-page(
+let cover-page(
   title: "",
   subtitle: "",
-  background: "assets/octoco-report/cover-background.png",
+  background: brand.front-page-image,
 ) = {
   set page(paper: "a4", margin: 0pt, footer: none)
   place(top + left, image(background, width: 100%, height: 100%))
@@ -176,7 +179,7 @@
   pagebreak()
 }
 
-#let title-page(
+let title-page(
   title-lines: (),
   prepared: "",
   version: "",
@@ -198,27 +201,47 @@
   )
 }
 
-#let report-outline(depth: 3) = {
+let report-outline(depth: 3) = {
   h1("Contents", numbered: false, outlined: false)
   v(-2pt)
   outline(title: none, depth: depth)
 }
 
-#let report-figure(image-path, caption, width: 100%, placement: none) = figure(
+let report-figure(image-path, caption, width: 100%, placement: none) = figure(
   placement: placement,
   image(image-path, width: width),
   caption: caption,
 )
 
-#let reference-counter = counter("reference-counter")
+let reference-counter = counter("reference-counter")
 
-#let cite(label) = context {
+let cite(label) = context {
   let entry = query(label).first()
   link(label, "[" + str(entry.value) + "]")
 }
 
-#let reference(label, body) = context {
+let reference(label, body) = context {
   reference-counter.step()
   let number = reference-counter.get().first() + 1
   [#body #metadata(number) #label]
+}
+
+(
+  report: report,
+  fig-caption: fig-caption,
+  checkbox: checkbox,
+  O: O,
+  X: X,
+  notice: notice,
+  callout: callout,
+  cover-page: cover-page,
+  title-page: title-page,
+  report-outline: report-outline,
+  report-figure: report-figure,
+  h1: h1,
+  h2: h2,
+  h3: h3,
+  cite: cite,
+  reference: reference,
+)
 }
