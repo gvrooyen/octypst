@@ -1,6 +1,9 @@
-#let body-font = ("Lato", "Open Sans", "Liberation Sans")
-#let heading-font = "Liberation Sans"
-#let mono-font = "Liberation Mono"
+#let body-font = sys.inputs.at(
+  "body-font",
+  default: ("Lato", "Open Sans", "Liberation Sans"),
+)
+#let heading-font = sys.inputs.at("heading-font", default: "Liberation Sans")
+#let mono-font = sys.inputs.at("mono-font", default: "Liberation Mono")
 
 #let report-template(brand) = {
 let primary-color = brand.colors.heading
@@ -126,7 +129,10 @@ let report(body, document-title: none, document-author: none, confidential: fals
       #context [#it.supplement #it.counter.display(it.numbering): #it.body]
     ]
   ]
-  show table: it => text(size: 9pt)[#it]
+  show table: it => {
+    set par(justify: false)
+    text(size: 9pt)[#it]
+  }
   show figure.where(kind: table): set figure.caption(position: top)
   show figure: it => block(above: 2em, below: 2em)[#it]
   show figure.caption.where(position: top): it => align(center)[
@@ -165,6 +171,7 @@ let h3(title, numbered: true, outlined: true) = {
 let cover-page(
   title: "",
   subtitle: "",
+  classification: none,
   background: brand.front-page-image,
 ) = {
   set page(paper: "a4", margin: 0pt, footer: none)
@@ -173,7 +180,14 @@ let cover-page(
     #align(right)[
       #text(font: heading-font, size: 25pt, weight: "bold", fill: white)[#title]
       #linebreak()
+      #v(8pt)
       #text(font: heading-font, size: 17pt, fill: white)[#subtitle]
+      #if classification != none [
+        #v(18pt)
+        #align(right)[
+          #text(font: heading-font, size: 12pt, fill: white)[#classification]
+        ]
+      ]
     ]
   ]
   pagebreak()

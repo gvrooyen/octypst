@@ -1,6 +1,6 @@
-# Report templates
+# Octypst
 
-This repository contains a reusable Typst report structure and separate brand definitions. The report layout, typography, headings, footers, figures, notices, and helper functions live in one structural template; a brand file supplies only the logo, cover artwork, and colors.
+Octypst is a reusable [Typst](https://typst.app/) template for professional technical reports. Report structure and branding are separate: one structural template owns layout, typography, headings, footers, figures, notices, and helpers, while each brand file supplies its logo, cover artwork, and colors.
 
 Two complete examples are included:
 
@@ -11,26 +11,57 @@ Two complete examples are included:
 
 The Octoco AI brand uses the dark technical imagery, `OCTOCO.AI` wordmark, and blue palette from [octoco.ai](https://octoco.ai). Its footer logo is a dark-on-transparent variant so that it remains legible on white pages.
 
-## Build the reports
+Typst documents are well suited to human and agent collaboration. Report content and layout are plain-text source files, so people can review focused Git diffs while coding agents can draft sections, update tables, or make consistent template changes. The PDF remains a reproducible build artifact rather than a file that must be manually merged.
 
-Install [Typst](https://typst.app/docs/) 0.13 or newer, then run:
+## Report preview
+
+![Sample report cover](assets/sample-report/report-cover.png)
+
+![Sample report content](assets/sample-report/report-content.png)
+
+## Quick start
+
+### Prerequisites
+
+- [Typst](https://github.com/typst/typst/releases) 0.13.1
+- GNU Make
+
+Clone the repository and build both branded samples:
 
 ```sh
+git clone https://github.com/gvrooyen/octypst.git
+cd octypst
 make
 ```
 
-This builds both sample PDFs. To build one report directly:
+Run `make clean` to remove generated PDFs. To compile one report directly:
 
 ```sh
 typst compile sample_report.typ
 typst compile oai-sample-report.typ
 ```
 
-Run `make clean` to remove generated PDFs.
+### Add the template to an existing Git project
+
+Keep an Octypst checkout on your machine and expose its `bin` directory once:
+
+```sh
+git clone https://github.com/gvrooyen/octypst.git "$HOME/octypst"
+export PATH="$HOME/octypst/bin:$PATH"
+```
+
+From the root of another project, create a self-contained Octoco-branded report folder:
+
+```sh
+new-report reports/design
+typst watch reports/design/report.typ reports/design/report.pdf
+```
+
+The generated folder contains a minimal `report.typ`, the structural and Octoco brand templates, required assets, `OCTYPST-LICENSE`, and a `.gitignore` for PDFs. The command refuses to overwrite an existing destination.
 
 ## Use the structural template
 
-Import the structural template and the desired brand, instantiate the template, and select the helpers the document uses:
+Import the structural template and a brand, instantiate the template, and select the helpers the document uses:
 
 ```typst
 #import "report-template.typ": report-template
@@ -85,10 +116,61 @@ A brand file exports a dictionary with this shape:
 
 - `logo` appears in the footer from page 2 onward.
 - `front-page-image` fills the cover page behind its title and subtitle.
-- `heading` styles level-one and level-two headings and the primary accent used by rules, notices, callouts, and checked boxes.
+- `heading` styles level-one and level-two headings and primary accents.
 - `subheading` styles level-three headings.
 - `caption` styles figure and table captions.
 
 To rebrand a report, import a different brand file and pass its dictionary to `report-template`. Report content and structural helpers do not need to change.
 
-Brand assets are grouped under `assets/octoco-report/` and `assets/oai-report/`. Content illustrations shared by both samples live under `assets/sample-report/`.
+## Repository layout
+
+| Path | Purpose |
+| --- | --- |
+| `report-template.typ` | Brand-neutral report structure and helpers. |
+| `octoco-report-brand.typ` | Octoco logo, cover, and colors. |
+| `oai-report-brand.typ` | Octoco AI logo, cover, and colors. |
+| `starter_report.typ` | Minimal Octoco report copied by `new-report`. |
+| `sample_report.typ` | Complete fictional Octoco example. |
+| `oai-sample-report.typ` | Complete fictional Octoco AI example. |
+| `bin/new-report` | Creates a self-contained report folder in another project. |
+| `assets/*-report/` | Brand-specific assets. |
+| `assets/sample-report/` | Illustrations shared by the samples. |
+| `tests/table-alignment.typ` | Wrapped left/center/right table-cell regression fixture. |
+
+## Font configuration
+
+The portable defaults are Lato/Open Sans/Liberation Sans for body text, Liberation Sans for headings, and Liberation Mono for code. Override installed fonts through the Makefile when needed:
+
+```sh
+OCTOCO_BODY_FONT="Open Sans" \
+OCTOCO_HEADING_FONT="Lato" \
+OCTOCO_MONO_FONT="Liberation Mono" \
+make
+```
+
+When invoking Typst directly, pass the equivalent `--input body-font=...`, `--input heading-font=...`, and `--input mono-font=...` options.
+
+## Regression check
+
+Run the complete build and table-layout regression check with:
+
+```sh
+make check
+```
+
+The check builds both sample reports and compares the rendered table fixture with its committed SVG reference. The fixture contains wrapped left-, center-, and right-aligned cells. This catches accidental reintroduction of inherited paragraph justification inside tables while preserving intentional table column alignment. Update the reference only after visually reviewing an intentional layout change.
+
+## Human and agent collaboration
+
+1. Keep report text, structure, and style changes in `.typ` files.
+2. Review source diffs, especially facts, client information, figures, and approval language.
+3. Run `make check` and inspect affected rendered pages before sharing.
+4. Commit source and assets; do not commit generated PDFs.
+
+## Building in Amp orbs
+
+The repository includes `.agents/setup` for Amp orbs. A fresh orb installs the pinned Typst toolchain and open fonts, then verifies it can compile the sample report.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
