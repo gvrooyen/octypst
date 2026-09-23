@@ -13,7 +13,7 @@ install_system_dependencies() {
   local package
   local missing_packages=()
 
-  for package in ca-certificates curl fonts-lato fonts-liberation fonts-open-sans xz-utils; do
+  for package in ca-certificates curl fonts-lato fonts-liberation fonts-open-sans python3 xz-utils; do
     dpkg-query --show --showformat='${db:Status-Status}' "$package" 2>/dev/null | grep -qx installed || \
       missing_packages+=("$package")
   done
@@ -49,3 +49,4 @@ install_typst
 log_step "Verifying report build"
 typst compile sample_report.typ /tmp/octyp-setup-check.pdf
 rm -f /tmp/octyp-setup-check.pdf
+python3 -c 'import ast, pathlib; ast.parse(pathlib.Path("scripts/pdf_preview.py").read_text())'

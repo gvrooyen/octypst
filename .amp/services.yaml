@@ -1,0 +1,9 @@
+services:
+  pdf-preview:
+    command: python3 scripts/pdf_preview.py --host 0.0.0.0 --port "$PORT"
+    health: /healthz
+    review: true
+    portal:
+      url: /
+      title: Report preview
+      description: Live report pages with scroll-preserving rebuilds and an Open PDF link.

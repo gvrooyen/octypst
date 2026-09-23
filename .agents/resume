@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# This repository has no backing services or credentials to restore. Keep the
-# lifecycle hook so future additions have a fast, explicit place for that work.
+# The PDF preview is supervised through .amp/services.yaml, not this hook.
+# Keep resume fast; no service restart or dependency installation is needed.
 command -v typst >/dev/null
+command -v python3 >/dev/null

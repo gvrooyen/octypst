@@ -59,6 +59,25 @@ typst watch reports/design/report.typ reports/design/report.pdf
 
 The generated folder contains a minimal `report.typ`, the structural and Octoco brand templates, required assets, `OCTYPST-LICENSE`, and a `.gitignore` for PDFs. The command refuses to overwrite an existing destination.
 
+### Live PDF preview in an Amp orb
+
+From this repository or a folder created by `new-report`, run:
+
+```sh
+amp orb services ensure
+```
+
+Open the **Report preview** portal URL printed by Amp, not the local listening address. The repository previews `sample_report.typ` by default; a generated folder previews its `report.typ`. To preview a different source, e.g. the Octoco AI sample, add this under `pdf-preview` in `.amp/services.yaml` and restart the service:
+
+```yaml
+env:
+  OCTYPST_PREVIEW_SOURCE: oai-sample-report.typ
+```
+
+Run `amp orb service restart pdf-preview` after changing the declaration. Alternatively, add `--source path/to/report.typ` to the service command. Outside Amp, run `python3 scripts/pdf_preview.py --source path/to/report.typ` and open the local address it prints.
+
+The service watches Typst sources and assets every 0.5 seconds. It rebuilds a PDF and numbered page images, refreshing the image viewer without losing its scroll position. **Open PDF** opens the selectable/downloadable PDF separately. Build failures are shown in the viewer while the last successful version remains available; inspect `amp orb service logs pdf-preview` for diagnostics. Preview outputs stay in ignored `.amp/preview/`; portal manifests stay in ignored `.amp/portals/`. Inspect the cover, a content page, and any changed tables/figures after an edit—compilation alone is not visual verification. The portal's floating review button supports comments on rendered pages.
+
 ## Use the structural template
 
 Import the structural template and a brand, instantiate the template, and select the helpers the document uses:
@@ -133,6 +152,8 @@ To rebrand a report, import a different brand file and pass its dictionary to `r
 | `sample_report.typ` | Complete fictional Octoco example. |
 | `oai-sample-report.typ` | Complete fictional Octoco AI example. |
 | `bin/new-report` | Creates a self-contained report folder in another project. |
+| `scripts/pdf_preview.py` | Live rebuilding PDF and scroll-preserving page viewer. |
+| `.amp/services.yaml` | Supervised preview service and portal for Amp orbs. |
 | `assets/*-report/` | Brand-specific assets. |
 | `assets/sample-report/` | Illustrations shared by the samples. |
 | `tests/table-alignment.typ` | Wrapped left/center/right table-cell regression fixture. |

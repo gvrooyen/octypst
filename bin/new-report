@@ -30,6 +30,8 @@ required_sources=(
   "$source_root/starter_report.typ"
   "$source_root/report-template.typ"
   "$source_root/octoco-report-brand.typ"
+  "$source_root/scripts/pdf_preview.py"
+  "$source_root/.amp/services.yaml"
   "$source_root/assets/octoco-report"
   "$source_root/LICENSE"
 )
@@ -57,10 +59,22 @@ trap cleanup_on_failure ERR
 cp "$source_root/starter_report.typ" "$destination/report.typ"
 cp "$source_root/report-template.typ" "$destination/"
 cp "$source_root/octoco-report-brand.typ" "$destination/"
+mkdir "$destination/scripts" "$destination/.amp"
+cp "$source_root/scripts/pdf_preview.py" "$destination/scripts/"
+cp "$source_root/.amp/services.yaml" "$destination/.amp/"
 mkdir "$destination/assets"
 cp -R "$source_root/assets/octoco-report" "$destination/assets/"
 cp "$source_root/LICENSE" "$destination/OCTYPST-LICENSE"
-printf '*.pdf\n' > "$destination/.gitignore"
+printf '*.pdf\n.amp/portals/\n.amp/preview/\n' > "$destination/.gitignore"
+cat > "$destination/README.md" <<'EOF'
+# Report
+
+Build with `typst compile report.typ report.pdf`.
+
+In an Amp orb, run `amp orb services ensure` from this folder and open its Report preview portal. The supervised service watches `report.typ` and assets, updates the page images without resetting scroll position, and provides an **Open PDF** link. Preview builds are ignored in `.amp/preview/`. Inspect the cover and affected content pages after each visual change. If a build fails, the viewer retains the last good result; inspect `amp orb service logs pdf-preview`.
+
+To preview a different `.typ` file, add `env: {OCTYPST_PREVIEW_SOURCE: other.typ}` under `pdf-preview` in `.amp/services.yaml` and run `amp orb service restart pdf-preview`.
+EOF
 
 trap - ERR
 printf 'Created report at %s\n' "$destination"
