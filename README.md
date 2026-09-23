@@ -57,7 +57,7 @@ new-report reports/design
 typst watch reports/design/report.typ reports/design/report.pdf
 ```
 
-The generated folder contains a minimal `report.typ`, the structural and Octoco brand templates, required assets, `OCTYPST-LICENSE`, and a `.gitignore` for PDFs. The command refuses to overwrite an existing destination.
+The generated folder contains a minimal `report.typ`, the structural and Octoco brand templates, required assets, `AGENTS.md` with report-writing guidance, `OCTYPST-LICENSE`, and a `.gitignore` for PDFs. The command refuses to overwrite an existing destination.
 
 ### Live PDF preview in an Amp orb
 
