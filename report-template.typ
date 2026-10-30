@@ -124,6 +124,7 @@ let report(body, document-title: none, document-author: none, confidential: fals
   show math.equation: set text(size: 1.1em)
   show quote: set text(style: "italic")
   show quote: it => block(inset: (x: 1em))[#it]
+  show link: it => underline(offset: 1pt, text(fill: rgb("#214F78"), it))
   show figure.caption: it => align(center)[
     #text(font: body-font, size: 9pt, fill: caption-color, style: "italic")[
       #context [#it.supplement #it.counter.display(it.numbering): #it.body]
