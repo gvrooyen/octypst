@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>__REPORT_NAME__ · Octypst editor</title>
+  <style>
+    :root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #ebdbb2; background: #1d2021; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; }
+    body { display: flex; flex-direction: column; }
+    header { min-height: 70px; display: flex; align-items: center; gap: 22px; padding: 0 28px; border-bottom: 1px solid #504945; background: #282828; }
+    .mark { width: 32px; height: 32px; display: grid; place-items: center; border: 2px solid #fe8019; border-radius: 50%; color: #fe8019; font-weight: 800; letter-spacing: -.12em; padding-right: 3px; }
+    .title { display: flex; flex-direction: column; min-width: 0; }
+    .eyebrow { color: #fe8019; font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: 3px 0 0; font-size: 16px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .actions { display: flex; align-items: center; gap: 13px; margin-left: auto; }
+    button { font: inherit; cursor: pointer; border-radius: 7px; padding: 9px 15px; }
+    #reload { color: #ebdbb2; background: transparent; border: 1px solid #665c54; }
+    #reload:hover { background: #3c3836; }
+    #save { color: #1d2021; background: #fabd2f; border: 1px solid #fabd2f; font-weight: 700; min-width: 92px; }
+    #save:hover:not(:disabled) { background: #fe8019; border-color: #fe8019; }
+    button:focus-visible { outline: 2px solid #8ec07c; outline-offset: 3px; }
+    button:disabled { opacity: .5; cursor: default; }
+    #status { display: flex; align-items: center; gap: 9px; color: #a89984; font-size: 12px; white-space: nowrap; }
+    #status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #928374; }
+    #status[data-state="dirty"]::before { background: #fabd2f; }
+    #status[data-state="saved"]::before { background: #b8bb26; }
+    #status[data-state="error"]::before { background: #fb4934; }
+    main { flex: 1; display: flex; min-height: 0; padding: 14px 18px; }
+    .workspace { --editor-width: 50%; display: grid; grid-template-columns: minmax(0, var(--editor-width)) 9px minmax(0, 1fr); width: 100%; margin: 0 auto; min-height: 0; background: #1d2021; border: 1px solid #504945; border-radius: 11px; overflow: hidden; box-shadow: 0 18px 56px #0008; }
+    .editor-pane, .preview-pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+    .tabbar { display: flex; align-items: center; min-height: 42px; padding: 0 14px; border-bottom: 1px solid #504945; background: #282828; color: #a89984; font-size: 12px; }
+    .tab { min-width: 0; padding: 12px 5px; border-bottom: 2px solid #fe8019; color: #fbf1c7; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .keymap-toggle { display: inline-flex; flex: none; gap: 2px; margin-left: auto; padding: 3px; border: 1px solid #665c54; border-radius: 999px; background: #1d2021; font-size: 11px; font-weight: 700; }
+    .keymap-toggle span { padding: 5px 10px; border-radius: 999px; color: #a89984; }
+    .keymap-toggle[data-mode="normal"] .normal, .keymap-toggle[data-mode="vim"] .vim { color: #1d2021; background: #fabd2f; }
+    #editor { min-height: 0; flex: 1; }
+    .divider { position: relative; background: #3c3836; cursor: col-resize; touch-action: none; }
+    .divider::before { content: ""; position: absolute; top: 50%; left: 3px; width: 3px; height: 40px; transform: translateY(-50%); border-radius: 3px; background: #a89984; }
+    .divider:hover, .divider:focus-visible, .workspace.resizing .divider { background: #665c54; outline: none; }
+    .divider:hover::before, .divider:focus-visible::before, .workspace.resizing .divider::before { background: #fe8019; }
+    .workspace.resizing, .workspace.resizing * { cursor: col-resize !important; user-select: none; }
+    .preview-bar { justify-content: space-between; gap: 12px; }
+    .preview-bar a { color: #fabd2f; white-space: nowrap; }
+    #preview-status { padding: 10px 16px; color: #a89984; font-size: 12px; border-bottom: 1px solid #504945; }
+    #preview-status:empty { display: none; }
+    #preview-status[data-error] { color: #fb4934; white-space: pre-wrap; max-height: 130px; overflow: auto; }
+    #preview { min-height: 0; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 18px; overflow: auto; padding: 18px; background: #525659; }
+    .preview-page { display: block; width: min(100%, 900px); height: auto; aspect-ratio: 210 / 297; background: white; box-shadow: 0 2px 10px #0008; }
+    .cm-editor { height: 100%; font-size: 14px; line-height: 1.65; }
+    .cm-editor .cm-scroller { font-family: "JetBrains Mono", "Cascadia Code", ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .cm-editor .cm-content { padding: 18px 12px 30px; }
+    .cm-editor .cm-gutters { border-right: 1px solid #504945; }
+    footer { display: flex; gap: 14px; padding: 9px 28px 13px; color: #a89984; font-size: 11px; }
+    .key { color: #ebdbb2; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    @media (max-width: 800px) {
+      header { padding: 12px 15px; flex-wrap: wrap; gap: 10px; }
+      .actions { width: 100%; justify-content: flex-end; }
+      main { padding: 8px; }
+      .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); }
+      .divider { display: none; }
+      footer { padding: 8px 14px; flex-wrap: wrap; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="mark" aria-hidden="true">O</div>
+    <div class="title"><div class="eyebrow">Octypst</div><h1>__REPORT_NAME__</h1></div>
+    <div class="actions">
+      <span id="status" role="status" aria-live="polite">Loading document…</span>
+      <button id="reload" type="button" disabled>Reload</button>
+      <button id="save" type="button" disabled>Save</button>
+    </div>
+  </header>
+  <main>
+    <div class="workspace" id="workspace">
+      <section class="editor-pane" aria-label="Typst source editor">
+        <div class="tabbar"><span class="tab">__REPORT_NAME__</span><button id="keymap-toggle" class="keymap-toggle" type="button" role="switch" aria-label="Vim keybindings" aria-checked="true" data-mode="vim" disabled><span class="normal">Normal</span><span class="vim">Vim</span></button></div>
+        <div id="editor"></div>
+      </section>
+      <div class="divider" id="divider" role="separator" aria-label="Resize editor and preview" aria-orientation="vertical" aria-valuemin="25" aria-valuemax="75" aria-valuenow="50" tabindex="0"></div>
+      <section class="preview-pane" aria-label="Rendered document preview">
+        <div class="tabbar preview-bar"><span class="tab">Rendered preview</span><a href="/preview.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+        <div id="preview-status" role="status" aria-live="polite">Rendering saved document…</div>
+        <div id="preview" aria-label="Rendered report pages"></div>
+      </section>
+    </div>
+  </main>
+  <footer><span id="vim-hints"><span class="key">i</span> insert · <span class="key">Esc</span> Vim command mode · <span class="key">:w</span> save</span><span id="normal-hints" hidden><span class="key">Ctrl/⌘ F</span> find · <span class="key">Ctrl/⌘ Z</span> undo</span><span><span class="key">Ctrl/⌘ S</span> save</span><span>Changes stay in this browser until saved</span></footer>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

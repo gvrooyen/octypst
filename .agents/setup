@@ -46,7 +46,11 @@ install_system_dependencies
 log_step "Installing Typst ${TYPST_VERSION}"
 install_typst
 
+log_step "Building report editor"
+npm ci
+npm run build:editor
+
 log_step "Verifying report build"
 typst compile sample_report.typ /tmp/octyp-setup-check.pdf
 rm -f /tmp/octyp-setup-check.pdf
-python3 -c 'import ast, pathlib; ast.parse(pathlib.Path("scripts/pdf_preview.py").read_text())'
+python3 -c 'import ast, pathlib; [ast.parse(pathlib.Path(p).read_text()) for p in ("scripts/pdf_preview.py", "scripts/report_editor.py")]'

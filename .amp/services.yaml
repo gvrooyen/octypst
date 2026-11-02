@@ -7,3 +7,11 @@ services:
       url: /
       title: Report preview
       description: Live report pages with scroll-preserving rebuilds and an Open PDF link.
+  report-editor:
+    command: python3 scripts/report_editor.py --host 0.0.0.0 --port "$PORT"
+    health: /healthz
+    review: true
+    portal:
+      url: /
+      title: Report editor
+      description: Edit and explicitly save Typst source beside its rendered pages.

@@ -1,3 +1,5 @@
 *.pdf
 .amp/portals/
 .amp/preview/
+node_modules/
+__pycache__/

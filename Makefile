@@ -32,6 +32,7 @@ check: all
 		echo "Table alignment regression differs from tests/table-alignment-reference.svg" >&2; \
 		exit 1; \
 	}
+	python3 -m unittest discover -s tests -p 'test_report_editor.py'
 
 FORCE:
 

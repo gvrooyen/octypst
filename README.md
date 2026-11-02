@@ -25,6 +25,7 @@ Report text and layout are plain-text files. People and agents can edit them, re
 
 - [Typst](https://github.com/typst/typst/releases) 0.13.1
 - GNU Make
+- Node.js and npm (to rebuild the browser editor)
 
 Clone the repository and build both branded samples:
 
@@ -57,7 +58,7 @@ new-report reports/design
 typst watch reports/design/report.typ reports/design/report.pdf
 ```
 
-The new folder contains `report.typ`, the shared template, the Octoco brand file and images, writing guidance in `AGENTS.md`, `OCTYPST-LICENSE`, and a `.gitignore` for PDFs. The command will not overwrite an existing folder.
+The new folder contains `report.typ`, the shared template, the Octoco brand file and images, the ready-to-run browser editor, writing guidance in `AGENTS.md`, `OCTYPST-LICENSE`, and a `.gitignore` for PDFs. The command will not overwrite an existing folder.
 
 ### Live PDF preview in an Amp orb
 
@@ -79,6 +80,14 @@ Then run `amp orb service restart pdf-preview`. You can also add `--source path/
 The service checks Typst files and images for changes every 0.5 seconds. When a file changes, it rebuilds the PDF and page images. The viewer keeps its scroll position. **Open PDF** opens a separate PDF whose text can be selected and downloaded.
 
 If a build fails, the viewer shows an error and keeps the last successful version. Check `amp orb service logs pdf-preview` for details. The generated preview files live in the ignored `.amp/preview/` folder; portal records live in the ignored `.amp/portals/` folder. After a visual change, inspect the cover, a body page, and affected tables or figures. You can comment on a rendered page with the portal's review button.
+
+### Browser report editor
+
+`amp orb services ensure` also starts the **Report editor** portal. It opens the selected Typst source beside rendered page images. The source repository edits `sample_report.typ` by default; a generated folder edits `report.typ`. To choose another file, set `OCTYPST_EDITOR_SOURCE` under `report-editor` in `.amp/services.yaml` and restart that service, or pass `--source path/to/report.typ` to `scripts/report_editor.py`. The source must be a `.typ` file inside the project.
+
+The editor supports Typst syntax highlighting and completion, a gruvbox-dark-hard theme, a Normal/Vim toggle (remembered locally), and a divider resized by pointer or arrow keys. Edits remain in the browser until **Save**, Ctrl/⌘ S, or Vim `:w`. Reload warns before discarding unsaved edits. If the file changed elsewhere, saving reports a conflict instead of overwriting it; use **Reload** to inspect the current file. A compile error leaves the saved source intact and the last good preview visible. **Open PDF** serves a separately compiled, selectable PDF. Editing via the portal writes to the report file in that orb; treat portal access as write access.
+
+The editor's JavaScript bundle is included in generated folders. To rebuild it in the source repository, run `npm ci && npm run build:editor` and keep `editor/app.bundle.js` in sync with `editor/app.js`. Outside Amp, run `python3 scripts/report_editor.py --source sample_report.typ`. Editor renders live in the ignored `.amp/preview/editor/` directory; check `amp orb service logs report-editor` for server errors.
 
 ## Use the structural template
 
@@ -155,7 +164,8 @@ To change a report's brand, import another brand file and pass it to `report-tem
 | `oai-sample-report.typ` | Complete fictional Octoco AI example. |
 | `bin/new-report` | Creates a self-contained report folder in another project. |
 | `scripts/pdf_preview.py` | Builds the PDF and page images for a viewer that keeps its scroll position. |
-| `.amp/services.yaml` | Supervised preview service and portal for Amp orbs. |
+| `scripts/report_editor.py`, `editor/` | Serves the explicit-save Typst editor and its rendered preview. |
+| `.amp/services.yaml` | Supervised preview and editor portals for Amp orbs. |
 | `assets/*-report/` | Brand-specific assets. |
 | `assets/sample-report/` | Illustrations shared by the samples. |
 | `tests/table-alignment.typ` | Checks wrapped table cells aligned left, centre, and right. |

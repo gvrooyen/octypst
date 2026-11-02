@@ -31,6 +31,9 @@ required_sources=(
   "$source_root/report-template.typ"
   "$source_root/octoco-report-brand.typ"
   "$source_root/scripts/pdf_preview.py"
+  "$source_root/scripts/report_editor.py"
+  "$source_root/editor/index.html"
+  "$source_root/editor/app.bundle.js"
   "$source_root/.amp/services.yaml"
   "$source_root/AGENTS.md"
   "$source_root/assets/octoco-report"
@@ -60,8 +63,10 @@ trap cleanup_on_failure ERR
 cp "$source_root/starter_report.typ" "$destination/report.typ"
 cp "$source_root/report-template.typ" "$destination/"
 cp "$source_root/octoco-report-brand.typ" "$destination/"
-mkdir "$destination/scripts" "$destination/.amp"
+mkdir "$destination/scripts" "$destination/.amp" "$destination/editor"
 cp "$source_root/scripts/pdf_preview.py" "$destination/scripts/"
+cp "$source_root/scripts/report_editor.py" "$destination/scripts/"
+cp "$source_root/editor/index.html" "$source_root/editor/app.bundle.js" "$destination/editor/"
 cp "$source_root/.amp/services.yaml" "$destination/.amp/"
 cp "$source_root/AGENTS.md" "$destination/"
 mkdir "$destination/assets"
@@ -73,9 +78,9 @@ cat > "$destination/README.md" <<'EOF'
 
 Build with `typst compile report.typ report.pdf`.
 
-In an Amp orb, run `amp orb services ensure` from this folder and open its Report preview portal. The supervised service watches `report.typ` and assets, updates the page images without resetting scroll position, and provides an **Open PDF** link. Preview builds are ignored in `.amp/preview/`. Inspect the cover and affected content pages after each visual change. If a build fails, the viewer retains the last good result; inspect `amp orb service logs pdf-preview`.
+In an Amp orb, run `amp orb services ensure` from this folder. The Report preview portal watches `report.typ` and assets, updates page images without resetting scroll position, and provides an **Open PDF** link. The Report editor portal offers an explicit-save Typst editor beside the rendered pages, with an independent **Open PDF** link. Both previews retain the last good result if compilation fails. Inspect the cover and affected content pages after each visual change; check `amp orb service logs pdf-preview` or `amp orb service logs report-editor` for errors. Preview builds are ignored in `.amp/preview/`.
 
-To preview a different `.typ` file, add `env: {OCTYPST_PREVIEW_SOURCE: other.typ}` under `pdf-preview` in `.amp/services.yaml` and run `amp orb service restart pdf-preview`.
+To select a different `.typ` file, add `env: {OCTYPST_PREVIEW_SOURCE: other.typ}` under `pdf-preview` or `env: {OCTYPST_EDITOR_SOURCE: other.typ}` under `report-editor` in `.amp/services.yaml` and restart that service. The editor requires `editor/app.bundle.js`, already included in this folder.
 EOF
 
 trap - ERR
