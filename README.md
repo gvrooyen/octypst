@@ -83,9 +83,13 @@ If a build fails, the viewer shows an error and keeps the last successful versio
 
 ### Browser report editor
 
-`amp orb services ensure` also starts the **Report editor** portal. It opens the selected Typst source beside rendered page images. The source repository edits `sample_report.typ` by default; a generated folder edits `report.typ`. To choose another file, set `OCTYPST_EDITOR_SOURCE` under `report-editor` in `.amp/services.yaml` and restart that service, or pass `--source path/to/report.typ` to `scripts/report_editor.py`. The source must be a `.typ` file inside the project.
+![Typst source beside the rendered Octoco report in the browser editor](assets/sample-report/report-editor.png)
 
-The editor supports Typst syntax highlighting and completion, a gruvbox-dark-hard theme, a Normal/Vim toggle (remembered locally), and a divider resized by pointer or arrow keys. Edits remain in the browser until **Save**, Ctrl/⌘ S, or Vim `:w`. Reload warns before discarding unsaved edits. If the file changed elsewhere, saving reports a conflict instead of overwriting it; use **Reload** to inspect the current file. A compile error leaves the saved source intact and the last good preview visible. **Open PDF** serves a separately compiled, selectable PDF. Editing via the portal writes to the report file in that orb; treat portal access as write access.
+The **Report editor** portal puts Typst source on the left and rendered report pages on the right. Edit the source, then choose **Save** to write it to disk and rebuild the page preview. The preview shows the last saved version while you work; **Open PDF** opens a separate, selectable PDF. Drag the divider to give either pane more space.
+
+`amp orb services ensure` starts the editor alongside the live PDF preview. The source repository edits `sample_report.typ` by default; a generated folder edits `report.typ`. To choose another file, set `OCTYPST_EDITOR_SOURCE` under `report-editor` in `.amp/services.yaml` and restart that service, or pass `--source path/to/report.typ` to `scripts/report_editor.py`. The source must be a `.typ` file inside the project.
+
+The editor supports Typst syntax highlighting and completion, a gruvbox-dark-hard theme, a Normal/Vim toggle (remembered locally), and pointer or arrow-key divider resizing. You can also save with Ctrl/⌘ S or Vim `:w`. Reload warns before discarding unsaved edits. If the file changed elsewhere, saving reports a conflict instead of overwriting it; use **Reload** to inspect the current file. A compile error leaves the saved source intact and the last good preview visible. Editing via the portal writes to the report file in that orb; treat portal access as write access.
 
 The editor's JavaScript bundle is included in generated folders. To rebuild it in the source repository, run `npm ci && npm run build:editor` and keep `editor/app.bundle.js` in sync with `editor/app.js`. Outside Amp, run `python3 scripts/report_editor.py --source sample_report.typ`. Editor renders live in the ignored `.amp/preview/editor/` directory; check `amp orb service logs report-editor` for server errors.
 

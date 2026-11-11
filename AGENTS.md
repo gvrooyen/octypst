@@ -11,6 +11,7 @@
 
 - Write for an intelligent non-technical reader in simple, clear, professional language. Prefer concrete facts, actions, and decisions to abstract consulting jargon.
 - Use short, direct sentences. Explain technical terms when they are needed.
+- Never follow a heading immediately with a subheading. Add a brief overview paragraph to orient the reader before the first subsection.
 - Avoid pompous claims and stock AI-sounding contrasts such as “it is X, not Y”, “not just X but Y”, and “rather than X, Y”.
 - Do not use em-dashes. Prefer punctuation or separate sentences; use an en-dash only when a dash is necessary.
 - Keep British or South African spelling consistent where appropriate.
